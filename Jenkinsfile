@@ -4,11 +4,13 @@ pipeline {
 
     environment {
 
-        AWS_REGION = "us-east-1"
+        IMAGE_NAME = "cloudnativeapp"
 
-        IMAGE_NAME = "flaskapp"
+        DOCKERHUB_REPO = "bhagyashribari/cloudnativeapp"
 
-        ACCOUNT_ID = credentials('aws-account-id')
+        IMAGE_TAG = "v1"
+
+        DOCKERHUB_USERNAME = "bhagyashribari"
     }
 
     stages {
@@ -17,7 +19,7 @@ pipeline {
 
             steps {
 
-                git 'https://github.com/username/repo.git'
+                git branch: 'dev', url: 'https://github.com/bhagyashri1224/cloudnative-aws-devops-platform.git'
             }
         }
 
@@ -25,7 +27,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t flaskapp:v1 .'
+                sh "docker build -t docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG} ."
             }
         }
 
@@ -49,31 +51,32 @@ pipeline {
 
             steps {
 
-                sh 'trivy image flaskapp:v1'
+                sh 'trivy image docker.io/bhagyashribari/cloudnativeapp:v1'
             }
         }
 
-        stage('Push to ECR') {
+        stage('Push to Docker Hub') {
+
+            steps {
+
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    sh '''
+                    echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+                    docker push docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Host App on Local Machine') {
 
             steps {
 
                 sh '''
-                aws ecr get-login-password \
-                --region us-east-1 | \
-                docker login \
-                --username AWS \
-                --password-stdin \
-                $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-                '''
-
-                sh '''
-                docker tag flaskapp:v1 \
-                $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/flaskapp:v1
-                '''
-
-                sh '''
-                docker push \
-                $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/flaskapp:v1
+                docker stop cloudnativeapp || true
+                docker rm cloudnativeapp || true
+                docker run -d -p 5000:5000 --name cloudnativeapp docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG}
+                echo "App hosted on http://localhost:5000"
                 '''
             }
         }
