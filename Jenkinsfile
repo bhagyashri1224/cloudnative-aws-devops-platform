@@ -68,7 +68,7 @@ pipeline {
             }
         }
 
-        stage('Host App on Local Machine') {
+        stage('Run Container') {
 
             steps {
 
@@ -81,14 +81,6 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS') {
-
-            steps {
-
-                sh '''
-                kubectl apply -f kubernetes/
-                '''
-            }
-        }
+        
     }
 }
