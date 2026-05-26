@@ -16,13 +16,13 @@ resource "local_file" "private_key" {
 }
 
 resource "aws_key_pair" "jenkins_key" {
-  key_name   = "jenkins"
+  key_name   = "jenkins-new-key"
   public_key = tls_private_key.jenkins.public_key_openssh
 }
 
 # Security group to allow SSH, HTTP, HTTPS, and Jenkins port
 resource "aws_security_group" "jenkins_sg" {
-  name        = "jenkins-sg"
+  name        = "jenkins1-new-sg"
   description = "Allow SSH, HTTP, HTTPS, and Jenkins"
 
   ingress {
@@ -71,7 +71,7 @@ resource "aws_security_group" "jenkins_sg" {
 # Launch EC2 instance and provision via SSH
 resource "aws_instance" "jenkins" {
   ami                    = "ami-0bdd88bd06d16ba03" # Amazon Linux 2023
-  instance_type          = "t3.large"
+  instance_type          = "c7i-flex.large"
   key_name               = aws_key_pair.jenkins_key.key_name
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
 
