@@ -67,6 +67,17 @@ pipeline {
             }
         }
 
+        stage('Host App Locally') {
+
+            steps {
+
+                sh '''
+                docker rm -f ${IMAGE_NAME} || true
+                docker run -d --name ${IMAGE_NAME} -p 5000:5000 docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG}
+                '''
+            }
+        }
+
         stage('Deploy to EKS') {
 
             steps {
