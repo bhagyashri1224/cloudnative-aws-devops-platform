@@ -6,7 +6,7 @@ pipeline {
 
         IMAGE_NAME = "cloudnativeapp"
         DOCKERHUB_REPO = "bhagyashribari/cloudnativeapp"
-
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         IMAGE_TAG = "v1"
 
         
