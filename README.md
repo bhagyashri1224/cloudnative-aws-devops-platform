@@ -530,9 +530,10 @@ CMD ["gunicorn",
 # Docker Commands
 
 ```bash id="jlwm109"
-docker build -t flaskapp:v1 .
 
-docker run -d -p 5000:5000 flaskapp:v1
+docker build -t cloudnativeapp:v1 .
+
+docker run -d -p 5000:5000 cloudnativeapp:v1
 
 docker ps
 ```
@@ -745,7 +746,7 @@ resource "aws_subnet" "public1" {
 
 resource "aws_ecr_repository" "repo" {
 
-  name = "flaskapp"
+  name = "cloudnativeapp"
 }
 ```
 
@@ -802,7 +803,7 @@ kind: Deployment
 
 metadata:
 
-  name: flaskapp
+  name: cloudnativeapp
   namespace: production
 
 spec:
@@ -812,22 +813,23 @@ spec:
   selector:
 
     matchLabels:
-      app: flaskapp
+      app: cloudnativeapp
 
   template:
 
     metadata:
 
       labels:
-        app: flaskapp
+        app: cloudnativeapp
 
     spec:
 
       containers:
 
-      - name: flaskapp
 
-        image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/flaskapp:v1
+      - name: cloudnativeapp
+
+        image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/cloudnativeapp:v1
 
         ports:
 
@@ -869,13 +871,13 @@ kind: Service
 
 metadata:
 
-  name: flaskapp-service
+  name: cloudnativeapp-service
   namespace: production
 
 spec:
 
   selector:
-    app: flaskapp
+    app: cloudnativeapp
 
   ports:
 
@@ -896,7 +898,7 @@ kind: HorizontalPodAutoscaler
 
 metadata:
 
-  name: flaskapp-hpa
+  name: cloudnativeapp-hpa
   namespace: production
 
 spec:
@@ -905,7 +907,7 @@ spec:
 
     apiVersion: apps/v1
     kind: Deployment
-    name: flaskapp
+    name: cloudnativeapp
 
   minReplicas: 2
   maxReplicas: 10
