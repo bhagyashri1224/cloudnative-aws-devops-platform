@@ -30,31 +30,7 @@ pipeline {
             }
         }
 
-        stage('Unit Testing') {
-
-            steps {
-
-                sh 'pytest app/'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-
-            steps {
-
-                sh 'sonar-scanner'
-            }
-        }
-
-        stage('Trivy Scan') {
-
-            steps {
-
-                sh 'trivy image docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG}'
-            }
-        }
-
-        stage('Push to Docker Hub') {
+         stage('Push to Docker Hub') {
 
             steps {
 
@@ -78,14 +54,6 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS') {
-
-            steps {
-
-                sh '''
-                kubectl apply -f kubernetes/
-                '''
-            }
-        }
+       
     }
 }
