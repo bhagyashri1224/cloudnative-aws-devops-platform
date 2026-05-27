@@ -26,7 +26,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG} .'
+                sh 'docker build -t docker.io/bhagyashribari/cloudnativeapp:v1.'
             }
         }
 
