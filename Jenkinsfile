@@ -5,11 +5,10 @@ pipeline {
     environment {
 
         IMAGE_NAME = "cloudnativeapp"
+        IMAGE_TAG = "v1"
         DOCKERHUB_REPO = "bhagyashribari/cloudnativeapp"
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        
 
-        
     }
 
     stages {
@@ -26,7 +25,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t docker.io/bhagyashribari/cloudnativeapp:v1.'
+                sh 'docker build -t docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG} .'
             }
         }
 
