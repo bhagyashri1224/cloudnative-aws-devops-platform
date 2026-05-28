@@ -8,14 +8,9 @@ import platform
 
 app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return "Hello World"
 @app.route('/')
 def home():
-
     hostname = socket.gethostname()
-
     return render_template(
         "index.html",
         hostname=hostname,
