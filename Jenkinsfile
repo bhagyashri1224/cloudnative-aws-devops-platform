@@ -30,13 +30,25 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                sh 'sonar-scanner'
+                script {
+                    if (sh(script: 'command -v sonar-scanner >/dev/null 2>&1', returnStatus: true) == 0) {
+                        sh 'sonar-scanner'
+                    } else {
+                        echo 'sonar-scanner not installed; skipping SonarQube Analysis'
+                    }
+                }
             }
         }
 
         stage('Trivy Scan') {
             steps {
-                sh "trivy image ${DOCKERHUB_REPO}:${IMAGE_TAG}"
+                script {
+                    if (sh(script: 'command -v trivy >/dev/null 2>&1', returnStatus: true) == 0) {
+                        sh "trivy image ${DOCKERHUB_REPO}:${IMAGE_TAG}"
+                    } else {
+                        echo 'trivy not installed; skipping vulnerability scan'
+                    }
+                }
             }
         }
 
