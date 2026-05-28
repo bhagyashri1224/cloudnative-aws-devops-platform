@@ -54,7 +54,7 @@ pipeline {
             steps {
 
                 sh''' 
-                echo $DOCKERHUB_CREDENTIALS | \ docker login \ --username $DOCKERHUB_CREDENTIALS_USR \ --password-stdin
+                echo $DOCKERHUB_CREDENTIALS  \ docker login \ --username $DOCKERHUB_CREDENTIALS_USR \ --password-stdin
                 '''
 
                 sh'''
