@@ -59,10 +59,10 @@ pipeline {
 
         stage('Host App Locally') {
             steps {
-                sh """
+                sh '''
                     docker rm -f $(docker ps -aq) || true
                     docker run -d --name ${IMAGE_NAME} -p 5000:5000 ${DOCKERHUB_REPO}:${IMAGE_TAG}
-                """
+                '''
             }
         }
     }
