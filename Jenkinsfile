@@ -12,19 +12,24 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'dev', url: 'https://github.com/bhagyashri1224/cloudnative-aws-devops-platform.git'
+                git branch: 'dev',
+                url: 'https://github.com/bhagyashri1224/cloudnative-aws-devops-platform.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} ."
+                sh """
+                docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .
+                """
             }
         }
 
         stage('Unit Testing') {
             steps {
-                sh "docker run --rm ${DOCKERHUB_REPO}:${IMAGE_TAG} pytest -q"
+                sh """
+                docker run --rm ${DOCKERHUB_REPO}:${IMAGE_TAG} pytest -q
+                """
             }
         }
 
@@ -54,14 +59,22 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKERHUB_USERNAME',
+                        passwordVariable: 'DOCKERHUB_PASSWORD'
+                    )
+                ]) {
+
                     sh """
-                        echo "\$DOCKERHUB_PASSWORD" | docker login --username "\$DOCKERHUB_USERNAME" --password-stdin
-                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                        docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                    echo "\$DOCKERHUB_PASSWORD" | docker login -u "\$DOCKERHUB_USERNAME" --password-stdin
+
+                    docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}
                     """
                 }
             }
+
             post {
                 always {
                     sh 'docker logout'
@@ -71,10 +84,14 @@ pipeline {
 
         stage('Host App Locally') {
             steps {
-                sh '''
-                    docker rm -f $(docker ps -aq) || true
-                    docker run -d --name ${IMAGE_NAME} -p 5000:5000 ${DOCKERHUB_REPO}:${IMAGE_TAG}
-                '''
+                sh """
+                docker rm -f ${IMAGE_NAME} || true
+
+                docker run -d \
+                --name ${IMAGE_NAME} \
+                -p 5000:5000 \
+                ${DOCKERHUB_REPO}:${IMAGE_TAG}
+                """
             }
         }
     }
