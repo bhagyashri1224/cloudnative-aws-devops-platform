@@ -48,11 +48,10 @@ pipeline {
 
                 sh '''
               docker rm -f $(docker ps -aq)
-              docker run -d --name cloudnativeapp -p 5000:5000 docker.io/bhagyashribari/cloudnativeapp:v1
-              docker push docker.io/bhagyashribari/cloudnativeapp:v1
+              docker run -d --name cloudnativeapp -p 5000:5000 docker.io/${DOCKERHUB_REPO}:${IMAGE_TAG}
+                '''
             }
         }
 
-       
     }
 }
