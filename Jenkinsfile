@@ -47,10 +47,8 @@ pipeline {
             steps {
 
                 sh '''
-                docker rm -f ${IMAGE_NAME} || true
-                docker run -d -p 5000:5000 docker.io/bhagyashribari/cloudnativeapp:v1
-                docker push docker.io/bhagyashribari/cloudnativeapp:v1
-                '''
+              docker rm -f $(docker ps -aq)
+              docker run -d --name cloudnativeapp -p 5000:5000 docker.io/bhagyashribari/cloudnativeapp:v1
             }
         }
 
