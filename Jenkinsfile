@@ -18,13 +18,13 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} ."
             }
         }
 
         stage('Unit Testing') {
             steps {
-                sh 'pytest app/'
+                sh "docker run --rm ${DOCKERHUB_REPO}:${IMAGE_TAG} pytest -q"
             }
         }
 
