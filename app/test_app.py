@@ -8,4 +8,5 @@ def test_home():
     response = client.get('/')
 
     assert response.status_code == 200
-    assert b'hostname' in response.data or b'Hello' in response.data
+    assert b'Hostname' in response.data
+    assert b'CloudNative AWS DevOps Platform' in response.data
